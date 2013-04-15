@@ -12,7 +12,11 @@ var Engine = function(server, options) {
 
   this._ns  = this._options.namespace || '';
 
-  if (socket) {
+  if(options.shards) {
+    var RedisShard = require('redis-shard')
+    this._redis = new RedisShard({servers: options.shards, no_ready_check: true});
+    this._subscriber = new RedisShard({servers: options.shards, no_ready_check: true});
+  } else if (socket) {
     this._redis = redis.createClient(socket, {no_ready_check: true});
     this._subscriber = redis.createClient(socket, {no_ready_check: true});
   } else {
